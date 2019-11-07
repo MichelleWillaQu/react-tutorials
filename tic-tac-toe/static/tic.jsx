@@ -1,3 +1,13 @@
+// Further Study:
+// Display the location for each move in the format (col, row) in the move history list.
+// Bold the currently selected item in the move list.
+// Rewrite Board to use two loops to make the squares instead of hardcoding them.
+// Add a toggle button that lets you sort the moves in either ascending or descending order.
+// When someone wins, highlight the three squares that caused the win.
+// When no one wins, display a message about the result being a draw.
+
+
+
 //Component1
 // class Square extends React.Component {
 //   //constructor(props){ //change (added, removed during lift)
@@ -34,24 +44,40 @@ function Square(props){ //functional component
 class Board extends React.Component {
   constructor(props){
     super(props);
-    this.state = {squares: Array(9).fill(null)};
-    //this.clicked = this.clicked.bind(this);
+    this.state = {squares: Array(9).fill(null),
+                  isX: true};
+    this.clicked = this.clicked.bind(this);
   }
+
   clicked(i){
     const squares = this.state.squares.slice(); //creates a copy of the array
-    squares[i] = 'X';
-    this.setState({squares: squares});
+    //do nothing if winner or if square has value (aka clicked before)
+    if (calculateWinner(squares) || squares[i]) { 
+      return;
+    }
+    const symbol = this.state.isX ? 'X' : 'O';
+    squares[i] = symbol;
+    this.setState({squares: squares,
+                   isX: !this.state.isX});
   }
+
   renderSquare(i) {
     //return <Square value={i}/>; //changed (pass prop)
-    return <Square 
+    return (<Square 
             value={this.state.squares[i]}
-            handleClick={() => this.clicked(i)} />; //pass state down
+            handleClick={() => this.clicked(i)} />); //pass state down
   }
 
   render() {
-    const status = 'Next player: X';
-
+    const winner = calculateWinner(this.state.squares);
+    let status;
+    if (winner){
+      status = 'Winner: ' + winner;
+    }
+    else{
+      const symbol = this.state.isX ? 'X' : 'O';
+      status = 'Current player: ' + symbol;
+    }
     return (
       <div>
         <div className="status">{status}</div>
@@ -91,6 +117,27 @@ class Game extends React.Component {
       </div>
     );
   }
+}
+
+
+function calculateWinner(squares) { //helper function
+  const lines = [
+    [0, 1, 2],
+    [3, 4, 5],
+    [6, 7, 8],
+    [0, 3, 6],
+    [1, 4, 7],
+    [2, 5, 8],
+    [0, 4, 8],
+    [2, 4, 6],
+  ];
+  for (let i = 0; i < lines.length; i++) {
+    const [a, b, c] = lines[i];
+    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+      return squares[a];
+    }
+  }
+  return null;
 }
 
 // ========================================
