@@ -3,11 +3,11 @@ import ReactDOM from 'react-dom'
 import { DndProvider, useDrag, useDrop } from 'react-dnd'
 import HTML5Backend from 'react-dnd-html5-backend'
 
-// look up touch backend later
+//look up touch backend later
 
 const ItemTypes = {
   KNIGHT: 'knight',
-} // enum
+} //enum
 
 function Knight () {
   //hook that specifies the item and an optional collector function (connect: ) 
@@ -68,8 +68,8 @@ class Board extends React.Component{
   }
   // handleClick(x, y){
   //     this.setState({knightPosition: [x, y]});
-  // } // called with onClick = {() => this.handleClick(x, y)} in renderSquare
-  // // since JS functions can save variables from the scope around it (aka closure)
+  // } //called with onClick = {() => this.handleClick(x, y)} in renderSquare
+  // //since JS functions can save variables from the scope around it (aka closure)
   moveKnight(x, y){
       this.setState({knightPosition: [x, y]});
   }
@@ -86,10 +86,11 @@ class Board extends React.Component{
       </div>);
   }
   render(){
-    const squares = []
+    const squares = [];
     for (let i = 0; i < 64; i++) {
       squares.push(this.renderSquare(i))
     }
+    //enclose the component inside DND context provider with initialized backend
     return (<DndProvider backend={HTML5Backend}>
               <div style={{width: '100vw',
                          height: '100vh',
@@ -201,3 +202,107 @@ ReactDOM.render(
 //     )
 //   }
 // }
+
+
+
+//Dragging and dropping onto same element (https://blog.logrocket.com/drag-and-drop-in-react/):
+// // Need to pass which type element can be draggable, its a simple string or 
+// // Symbol. This is like an Unique ID so that the library know what type of element is dragged or dropped on.
+// const type = "Image";
+
+// const Image = ({ image, index }) => {
+//   const ref = useRef(null); // Initialize the reference
+  
+//   // useDrop hook is responsible for handling whether any item gets hovered or dropped on the element
+//   const [, drop] = useDrop({
+//     // Accept will make sure only these element type can be droppable on this element
+//     accept: type,
+//      hover(item) { // item is the dragged element
+//        if (!ref.current) {
+//          return;
+//        }
+//        const dragIndex = item.index;
+//        // current element where the dragged element is hovered on
+//        const hoverIndex = index;
+//        // If the dragged element is hovered in the same place, then do nothing
+//        if (dragIndex === hoverIndex) { 
+//          return;
+//        }
+//        // If it is dragged around other elements, then move the image and set the state with position changes
+//        moveImage(dragIndex, hoverIndex);
+//        /*
+//          Update the index for dragged item directly to avoid flickering
+//          when the image was half dragged into the next
+//        */
+//        item.index = hoverIndex;
+//      }
+//    });
+
+//   // useDrag will be responsible for making an element draggable. It also 
+//   // expose, isDragging method to add any styles while dragging
+//   const [{ isDragging }, drag] = useDrag({
+//     // item denotes the element type, unique identifier (id) and the index (position)
+//     item: { type, id: image.id, index },
+//     // collect method is like an event listener, it monitors whether the 
+//     // element is dragged and expose that information
+//     collect: monitor => ({
+//       isDragging: monitor.isDragging()
+//     })
+//   });
+  
+//   /* 
+//     Initialize drag and drop into the element using its reference.
+//     Here we initialize both drag and drop on the same element (i.e., Image component)
+//   */
+//   drag(drop(ref));
+
+//   // Add the reference to the element
+//   return (
+//     <div
+//       ref={ref}
+//       style={{ opacity: isDragging ? 0 : 1 }}
+//       className="file-item"
+//     >
+//       <img alt={`img - ${image.id}`} src={image.src} className="file-img" />
+//     </div>
+//   );
+// };
+
+// // Passed into ImageList then Image
+// const moveImage = (dragIndex, hoverIndex) => {
+//     // Get the dragged element
+//     const draggedImage = images[dragIndex];
+    
+//       - copy the dragged image before hovered element (i.e., [hoverIndex, 0, draggedImage])
+//       - remove the previous reference of dragged element (i.e., [dragIndex, 1])
+//       - here we are using this update helper method from immutability-helper package
+    
+//     setImages(
+//       update(images, {
+//         $splice: [[dragIndex, 1], [hoverIndex, 0, draggedImage]]
+//       })
+//     );
+// };
+
+//FOR TOUCH BACKEND
+// import TouchBackend from "react-dnd-touch-backend";
+
+// // simple way to check whether the device support touch (it doesn't check all 
+// // fallback, it supports only modern browsers)
+// const isTouchDevice = () => {
+//   if ("ontouchstart" in window) {
+//     return true;
+//   }
+//   return false;
+// };
+
+// // Assigning backend based on touch support on the device
+// const backendForDND = isTouchDevice() ? TouchBackend : HTML5Backend;
+
+// ...
+// return (
+//   ...
+//   <DndProvider backend={backendForDND}>
+//     <ImageList images={images} moveImage={moveImage} />
+//   </DndProvider>
+// )
